@@ -1,0 +1,35 @@
+step,event,cwnd
+0,ack (slow start),2.0
+1,ack (slow start),3.0
+2,ack (slow start),4.0
+3,LOSS - window reset,1
+4,ack (slow start),2
+5,ack (congestion avoidance),2.5
+6,ack (congestion avoidance),2.9
+7,ack (congestion avoidance),3.24
+8,LOSS - window reset,1
+9,ack (slow start),2
+10,ack (congestion avoidance),2.5
+11,ack (congestion avoidance),2.9
+12,ack (congestion avoidance),3.24
+13,LOSS - window reset,1
+14,ack (slow start),2
+15,ack (congestion avoidance),2.5
+16,ack (congestion avoidance),2.9
+17,ack (congestion avoidance),3.24
+18,ack (congestion avoidance),3.55
+19,LOSS - window reset,1
+20,ack (slow start),2
+21,LOSS - window reset,1
+22,ack (congestion avoidance),2.0
+23,LOSS - window reset,1
+24,ack (congestion avoidance),2.0
+25,LOSS - window reset,1
+26,LOSS - window reset,1
+27,ack (congestion avoidance),2.0
+28,ack (congestion avoidance),2.5
+29,ack (congestion avoidance),2.9
+30,ack (congestion avoidance),3.24
+31,ack (congestion avoidance),3.55
+32,ack (congestion avoidance),3.83
+33,ack (congestion avoidance),4.1

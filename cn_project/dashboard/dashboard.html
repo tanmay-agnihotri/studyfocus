@@ -1,0 +1,1222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>StudyFocus</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background: #0a0710;
+    color: #2a2140;
+    min-height: 100vh;
+  }
+
+  #onboarding {
+    min-height: 100vh; display: flex; align-items: center; justify-content: center;
+    background: linear-gradient(160deg, #fff4e0 0%, #ffe0ec 50%, #f0e0ff 100%);
+    padding: 24px;
+  }
+  .onboard-card {
+    background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(10px);
+    border: 1px solid rgba(168, 85, 247, 0.15); border-radius: 24px;
+    padding: 44px 34px; max-width: 460px; width: 100%; text-align: center;
+    box-shadow: 0 20px 60px rgba(168, 85, 247, 0.15);
+  }
+  .onboard-card .emoji-row { font-size: 32px; margin-bottom: 8px; }
+  .onboard-card h1 {
+    font-size: 32px; font-weight: 800; margin-bottom: 6px;
+    background: linear-gradient(90deg, #ff6ec7, #a855f7); -webkit-background-clip: text;
+    background-clip: text; color: transparent;
+  }
+  .onboard-card .sub { color: #7a5a94; font-size: 14px; margin-bottom: 30px; font-weight: 500; }
+  .onboard-field { text-align: left; margin-bottom: 18px; }
+  .onboard-field label { display: block; font-size: 12px; color: #a855f7; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700; }
+  .onboard-field input, .onboard-field select {
+    width: 100%; padding: 13px 14px; border-radius: 12px; border: 1.5px solid #f0d8fa;
+    background: #fffaf0; color: #4a2a5e; font-size: 14px;
+  }
+  .onboard-field input:focus, .onboard-field select:focus { outline: none; border-color: #ff6ec7; }
+  .onboard-submit {
+    width: 100%; padding: 15px; border-radius: 14px; border: none; margin-top: 10px;
+    background: linear-gradient(90deg, #ff6ec7, #a855f7); color: #fff;
+    font-weight: 800; font-size: 15px; cursor: pointer; letter-spacing: 0.02em;
+    box-shadow: 0 8px 20px rgba(255, 110, 199, 0.35);
+  }
+
+  #main-app { display: none; }
+  .hero {
+    background: radial-gradient(ellipse at top right, #4a2a5e 0%, #1a0f24 60%, #0a0710 100%);
+    padding: 40px 24px 60px;
+    position: relative;
+  }
+  .hero-content { max-width: 780px; margin: 0 auto; }
+  .hero .eyebrow { color: #ff6ec7; font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 8px; }
+  .hero h1 { font-size: 32px; font-weight: 800; color: #fff; margin-bottom: 8px; }
+  .hero .sub { color: #d4c4e8; font-size: 14px; max-width: 480px; }
+  .hero .change-profile { color: #ff6ec7; font-size: 12px; cursor: pointer; margin-top: 12px; display: inline-block; }
+
+  .body-wrap { max-width: 780px; margin: -30px auto 0; padding: 0 24px 40px; position: relative; z-index: 2; }
+
+  .quote-banner {
+    background: linear-gradient(135deg, #fff, #faf5ff);
+    border-radius: 16px; padding: 20px 26px; margin-bottom: 16px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3); text-align: center;
+  }
+  .quote-text { font-size: 15px; font-style: italic; color: #4a2a5e; line-height: 1.5; }
+  .quote-author { font-size: 12px; color: #a855f7; margin-top: 8px; font-weight: 700; }
+
+  .card {
+    background: #fff; border-radius: 16px; padding: 20px 22px; margin-bottom: 14px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+  }
+  .card-title {
+    font-size: 12px; text-transform: uppercase; letter-spacing: 0.06em;
+    color: #a855f7; margin-bottom: 14px; font-weight: 700;
+  }
+
+  .stats-row { display: flex; gap: 12px; }
+  .stat-box { flex: 1; text-align: center; padding: 12px; background: #faf5ff; border-radius: 12px; }
+  .stat-number { font-size: 26px; font-weight: 800; color: #a855f7; }
+  .stat-label { color: #8a7a9c; font-size: 11px; margin-top: 2px; }
+
+  .progress-card { cursor: pointer; }
+  .progress-details { display: none; margin-top: 16px; border-top: 1px solid #f0e8fa; padding-top: 16px; }
+  .progress-details.open { display: block; }
+  .progress-details h4 { font-size: 12px; color: #a855f7; margin: 12px 0 6px; text-transform: uppercase; }
+
+  .site-row { display: flex; align-items: center; gap: 10px; padding: 7px 0; }
+  .site-name { flex: 0 0 140px; font-size: 12px; color: #4a2a5e; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .bar-track { flex: 1; background: #f0e8fa; border-radius: 6px; height: 6px; overflow: hidden; }
+  .bar-fill { background: linear-gradient(90deg, #ff6ec7, #a855f7); height: 100%; border-radius: 6px; }
+  .site-mins { flex: 0 0 45px; text-align: right; font-size: 11px; color: #8a7a9c; }
+  .empty-state { color: #b0a0c4; font-size: 13px; text-align: center; padding: 10px; }
+
+  .task-input-row { display: flex; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; }
+  .task-input-row input[type="text"] {
+    flex: 1; min-width: 140px; padding: 11px 14px; border-radius: 10px; border: 1px solid #ecdcf5;
+    background: #faf5ff; color: #2a2140; font-size: 13px;
+  }
+  .task-input-row input[type="time"], .task-input-row input[type="number"] {
+    padding: 11px; border-radius: 10px; border: 1px solid #ecdcf5;
+    background: #faf5ff; color: #2a2140; font-size: 13px; width: 90px;
+  }
+  .task-input-row button {
+    padding: 11px 18px; border-radius: 10px; border: none;
+    background: linear-gradient(90deg, #ff6ec7, #a855f7); color: #fff;
+    font-weight: 700; font-size: 13px; cursor: pointer;
+  }
+  .task-row {
+    display: flex; align-items: center; gap: 10px; padding: 12px 0; border-bottom: 1px solid #f0e8fa;
+    flex-wrap: wrap;
+  }
+  .task-row:last-child { border-bottom: none; }
+  .task-checkbox { width: 18px; height: 18px; accent-color: #a855f7; cursor: pointer; }
+  .task-text { flex: 1; font-size: 14px; color: #2a2140; min-width: 120px; }
+  .task-text.done { text-decoration: line-through; color: #b0a0c4; }
+  .task-meta { font-size: 11px; color: #a855f7; background: #faf5ff; padding: 3px 8px; border-radius: 6px; }
+  .task-timer-btn {
+    padding: 6px 12px; border-radius: 8px; border: none; font-size: 12px; font-weight: 700; cursor: pointer;
+    background: #f0e8fa; color: #a855f7;
+  }
+  .task-timer-btn.running { background: #ff6ec7; color: #fff; }
+  .task-timer-display { font-size: 12px; color: #6a5a80; font-variant-numeric: tabular-nums; min-width: 48px; }
+  .task-delete { color: #d0c0e0; cursor: pointer; font-size: 18px; padding: 0 4px; }
+  .task-delete:hover { color: #ff6ec7; }
+  .progress-bar-track { background: #f0e8fa; border-radius: 6px; height: 8px; overflow: hidden; margin-top: 10px; }
+  .progress-bar-fill { background: linear-gradient(90deg, #4ade80, #22c55e); height: 100%; transition: width 0.4s ease; }
+
+  .pomodoro-card { text-align: center; }
+  .pomodoro-display { font-size: 44px; font-weight: 800; color: #a855f7; font-variant-numeric: tabular-nums; margin: 8px 0; }
+  .pomodoro-mode { font-size: 12px; color: #8a7a9c; text-transform: uppercase; letter-spacing: 0.05em; }
+  .pomodoro-controls { display: flex; gap: 10px; justify-content: center; margin-top: 14px; }
+  .pomodoro-controls button {
+    padding: 10px 20px; border-radius: 10px; border: none; font-weight: 700; font-size: 13px; cursor: pointer;
+  }
+  .pomodoro-start { background: linear-gradient(90deg, #4ade80, #22c55e); color: #0a0710; }
+  .pomodoro-reset { background: #f0e8fa; color: #a855f7; }
+
+  .game-tabs { display: flex; gap: 6px; margin-bottom: 14px; flex-wrap: wrap; }
+  .game-tab {
+    padding: 8px 14px; border-radius: 999px; border: 1px solid #ecdcf5; background: #faf5ff;
+    color: #a855f7; font-size: 12px; cursor: pointer; font-weight: 600;
+  }
+  .game-tab.active { background: linear-gradient(90deg, #ff6ec7, #a855f7); color: #fff; border-color: transparent; }
+  .game-area { background: #faf5ff; border-radius: 12px; padding: 20px; text-align: center; }
+  .game-question { font-size: 16px; color: #2a2140; margin-bottom: 16px; font-weight: 600; }
+  .game-options { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .game-option {
+    padding: 12px; border-radius: 10px; border: 1px solid #ecdcf5; background: #fff;
+    color: #2a2140; font-size: 13px; cursor: pointer;
+  }
+  .game-option:hover { border-color: #a855f7; }
+  .game-option.correct { background: #dcfce7; border-color: #4ade80; }
+  .game-option.wrong { background: #fde2e2; border-color: #ff6b6b; }
+  .game-input-row { display: flex; gap: 8px; justify-content: center; margin-top: 10px; }
+  .game-input-row input {
+    padding: 10px 14px; border-radius: 8px; border: 1px solid #ecdcf5; font-size: 14px; text-align: center;
+    letter-spacing: 0.1em; text-transform: uppercase;
+  }
+  .game-input-row button {
+    padding: 10px 18px; border-radius: 8px; border: none; background: linear-gradient(90deg, #ff6ec7, #a855f7);
+    color: #fff; font-weight: 700; cursor: pointer;
+  }
+  .word-scramble { font-size: 28px; font-weight: 800; letter-spacing: 0.15em; color: #a855f7; margin-bottom: 12px; }
+  .sentence-words { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-bottom: 12px; }
+  .sentence-word {
+    padding: 8px 14px; border-radius: 8px; background: #fff; border: 1px solid #ecdcf5;
+    cursor: pointer; font-size: 13px; color: #2a2140;
+  }
+  .sentence-word.picked { background: #a855f7; color: #fff; }
+  .sentence-answer { min-height: 24px; font-size: 14px; color: #6a5a80; margin-bottom: 10px; }
+  .game-feedback { margin-top: 10px; font-size: 13px; font-weight: 700; min-height: 18px; }
+  .game-feedback.correct { color: #22c55e; }
+  .game-feedback.wrong { color: #ff6b6b; }
+
+  .allowed-list { display: flex; flex-wrap: wrap; gap: 6px; }
+  .domain-pill { background: #faf5ff; padding: 4px 10px; border-radius: 999px; font-size: 11px; color: #a855f7; }
+  .domain-link {
+    background: #faf5ff; padding: 6px 12px; border-radius: 999px; font-size: 12px; color: #a855f7;
+    text-decoration: none; font-weight: 600; border: 1px solid #f0d8fa; transition: all 0.15s;
+  }
+  .domain-link:hover { background: linear-gradient(90deg, #ff6ec7, #a855f7); color: #fff; }
+  .domain-link .limit-tag { font-size: 10px; color: #ff6ec7; margin-left: 4px; }
+  .domain-link:hover .limit-tag { color: #fff; }
+
+  .reminder-banner {
+    display: none; background: linear-gradient(90deg, #ff6ec7, #a855f7); color: #fff;
+    border-radius: 12px; padding: 12px 16px; margin-bottom: 14px; font-weight: 600; font-size: 13px;
+  }
+  .reminder-banner.show { display: block; }
+
+  .footer { color: #6a5a80; font-size: 11px; text-align: center; margin-top: 20px; }
+
+  /* ---------- Tab navigation ---------- */
+  .tab-nav { display: flex; gap: 8px; margin-bottom: 16px; }
+  .tab-btn {
+    flex: 1; padding: 13px; border-radius: 12px; border: none; cursor: pointer;
+    background: rgba(255,255,255,0.15); color: #fff; font-weight: 700; font-size: 13px;
+    transition: all 0.15s;
+  }
+  .tab-btn.active { background: #fff; color: #a855f7; }
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  /* ---------- Chat UI ---------- */
+  .chat-card {
+    background: #fff; border-radius: 16px; box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+    overflow: hidden; display: flex; flex-direction: column; height: 60vh; margin-bottom: 14px;
+  }
+  .messages { flex: 1; overflow-y: auto; padding: 20px; }
+  .msg { margin-bottom: 14px; display: flex; }
+  .msg.user { justify-content: flex-end; }
+  .bubble { max-width: 78%; padding: 12px 16px; border-radius: 16px; font-size: 14px; line-height: 1.5; white-space: pre-wrap; }
+  .msg.user .bubble { background: linear-gradient(90deg, #ff6ec7, #a855f7); color: #fff; border-bottom-right-radius: 4px; }
+  .msg.assistant .bubble { background: #faf5ff; color: #2a2140; border-bottom-left-radius: 4px; }
+  .msg.system .bubble { background: #fff4e0; color: #8a6a2a; font-size: 12px; text-align: center; margin: 0 auto; }
+  .links-block { margin-top: 8px; padding: 10px 14px; background: #f0fdf4; border-radius: 12px; border: 1px solid #bbf7d0; }
+  .links-block .links-title { font-size: 11px; color: #16a34a; font-weight: 700; text-transform: uppercase; margin-bottom: 6px; }
+  .links-block a { display: block; font-size: 12px; color: #15803d; margin-bottom: 3px; text-decoration: none; }
+  .links-block a:hover { text-decoration: underline; }
+  .typing-indicator { display: none; color: #a855f7; font-size: 12px; padding: 0 20px 10px; }
+  .typing-indicator.show { display: block; }
+  .chat-input-row { display: flex; gap: 8px; padding: 14px 16px; border-top: 1px solid #f0e8fa; background: #fff; }
+  .chat-input-row input {
+    flex: 1; padding: 12px 16px; border-radius: 12px; border: 1.5px solid #f0d8fa;
+    background: #fffaf0; font-size: 14px; color: #2a2140;
+  }
+  .chat-input-row input:focus { outline: none; border-color: #ff6ec7; }
+  .chat-input-row button {
+    padding: 12px 20px; border-radius: 12px; border: none;
+    background: linear-gradient(90deg, #ff6ec7, #a855f7); color: #fff; font-weight: 700; cursor: pointer;
+  }
+  .chat-input-row button:disabled { opacity: 0.5; cursor: not-allowed; }
+  .mic-btn {
+    padding: 12px 14px; border-radius: 12px; border: 1.5px solid #f0d8fa;
+    background: #faf5ff; color: #a855f7; cursor: pointer; font-size: 16px;
+  }
+  .mic-btn.listening { background: #ff6ec7; color: #fff; border-color: transparent; animation: pulse 1s infinite; }
+  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.6; } }
+  .speak-toggle-row { display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 10px; }
+  .speak-toggle-row label { font-size: 12px; color: #7a5a94; display: flex; align-items: center; gap: 6px; cursor: pointer; }
+  .speak-btn {
+    background: none; border: none; cursor: pointer; font-size: 13px; color: #a855f7;
+    padding: 2px 6px; margin-left: 6px; vertical-align: middle;
+  }
+  .speak-btn:hover { color: #ff6ec7; }
+  .notes-bar { display: flex; gap: 8px; margin-top: 12px; align-items: center; justify-content: center; }
+  .notes-bar label {
+    padding: 8px 14px; border-radius: 999px; background: #fff; border: 1px solid #f0d8fa;
+    color: #a855f7; font-size: 12px; cursor: pointer; font-weight: 600;
+  }
+  .notes-bar input[type="file"] { display: none; }
+  .notes-status { font-size: 11px; color: #7a5a94; }
+  .status-banner {
+    background: #fff4e0; border: 1px solid #ffd88f; border-radius: 12px;
+    padding: 10px 16px; font-size: 12px; color: #8a6a2a; margin-bottom: 12px; text-align: center;
+  }
+</style>
+</head>
+<body>
+
+<div id="onboarding">
+  <div class="onboard-card">
+    <div class="emoji-row">🌟📚🚀</div>
+    <h1>StudyFocus</h1>
+    <p class="sub">Let's build your personal study space and unlock your best focus yet!</p>
+
+    <div class="onboard-field">
+      <label>Your age</label>
+      <input type="number" id="ob-age" min="5" max="30" placeholder="e.g. 15">
+    </div>
+
+    <div class="onboard-field">
+      <label>Class / Year</label>
+      <select id="ob-class">
+        <option value="">Select...</option>
+        <option>Primary (1-5)</option>
+        <option>Middle School (6-8)</option>
+        <option>9th</option><option>10th</option><option>11th</option><option>12th</option>
+        <option>College - Undergraduate</option>
+        <option>College - Postgraduate</option>
+        <option>Competitive Exam Prep</option>
+      </select>
+    </div>
+
+    <div class="onboard-field">
+      <label>Board / Curriculum</label>
+      <select id="ob-board">
+        <option value="">Select...</option>
+        <option>CBSE</option><option>ICSE</option><option>State Board</option>
+        <option>IB</option><option>IGCSE</option><option>University / College</option><option>Other</option>
+      </select>
+    </div>
+
+    <button class="onboard-submit" onclick="submitOnboarding()">Start Studying</button>
+  </div>
+</div>
+
+<div id="main-app">
+  <div class="hero">
+    <div class="hero-content">
+      <div class="eyebrow">Welcome back</div>
+      <h1 id="hero-name">Your Study Space</h1>
+      <p class="sub" id="hero-sub">Stay focused. Stay motivated. One task at a time.</p>
+      <span class="change-profile" onclick="resetOnboarding()">Change profile</span>
+    </div>
+  </div>
+
+  <div class="body-wrap">
+    <div class="tab-nav">
+      <button class="tab-btn active" id="tab-btn-dashboard" onclick="switchTab('dashboard')">Dashboard</button>
+      <button class="tab-btn" id="tab-btn-tutor" onclick="switchTab('tutor')">AI Tutor</button>
+      <button class="tab-btn" id="tab-btn-guide" onclick="switchTab('guide')">Setup Guide</button>
+    </div>
+
+    <div class="tab-panel active" id="tab-dashboard">
+    <div class="reminder-banner" id="reminder-banner"></div>
+
+    <div class="quote-banner">
+      <div class="quote-text" id="quote-text">Loading motivation...</div>
+      <div class="quote-author" id="quote-author"></div>
+    </div>
+
+    <div class="card progress-card" onclick="toggleProgress()">
+      <div class="card-title">Track Progress (tap to expand)</div>
+      <div class="stats-row">
+        <div class="stat-box">
+          <div class="stat-number" id="total-time">0m</div>
+          <div class="stat-label">time studied today</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-number" id="tasks-done-count">0/0</div>
+          <div class="stat-label">tasks done</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-number" id="streak-count">0</div>
+          <div class="stat-label">day streak</div>
+        </div>
+      </div>
+      <div class="progress-details" id="progress-details">
+        <h4>Time per website</h4>
+        <div id="site-list"><div class="empty-state">No browsing activity yet</div></div>
+        <h4>Tasks completed today</h4>
+        <div id="completed-tasks-list"><div class="empty-state">None yet</div></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Today's Tasks</div>
+      <div class="task-input-row">
+        <input type="text" id="task-input" placeholder="What are you studying?">
+        <input type="number" id="task-hours-input" placeholder="Hrs" step="0.5" min="0.5">
+        <input type="time" id="task-time-input">
+        <button onclick="addTask()">Add</button>
+      </div>
+      <div id="task-list"><div class="empty-state">No tasks yet - add your study plan for today</div></div>
+      <div class="progress-bar-track"><div class="progress-bar-fill" id="task-progress" style="width:0%"></div></div>
+    </div>
+
+    <div class="card pomodoro-card">
+      <div class="card-title">Focus Timer (Pomodoro)</div>
+      <div class="pomodoro-mode" id="pomo-mode">Focus Session</div>
+      <div class="pomodoro-display" id="pomo-display">25:00</div>
+      <div class="pomodoro-controls">
+        <button class="pomodoro-start" id="pomo-start-btn" onclick="togglePomodoro()">Start</button>
+        <button class="pomodoro-reset" onclick="resetPomodoro()">Reset</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Brain Break - Play Instead of Scroll</div>
+      <div class="game-tabs">
+        <button class="game-tab active" data-game="trivia" onclick="switchGame('trivia')">Trivia</button>
+        <button class="game-tab" data-game="scramble" onclick="switchGame('scramble')">Word Scramble</button>
+        <button class="game-tab" data-game="emoji" onclick="switchGame('emoji')">Emoji Riddle</button>
+        <button class="game-tab" data-game="sentence" onclick="switchGame('sentence')">Sentence Builder</button>
+      </div>
+      <div class="game-area" id="game-area"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Age Profile</div>
+      <div class="allowed-list" id="profile-display"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Allowed Sites Right Now</div>
+      <div class="allowed-list" id="allowed-list"></div>
+    </div>
+
+    <p class="footer">StudyFocus - your time, your rules, your progress</p>
+    </div>
+
+    <div class="tab-panel" id="tab-tutor">
+      <div class="status-banner" id="status-banner" style="display:none"></div>
+      <div class="chat-card">
+        <div class="messages" id="messages"></div>
+        <div class="typing-indicator" id="typing">Tutor is typing...</div>
+        <div class="chat-input-row">
+          <button class="mic-btn" id="mic-btn" onclick="toggleListening()" title="Speak your question">&#127908;</button>
+          <input type="text" id="chat-input" placeholder="What are you studying today?" onkeydown="if(event.key==='Enter')sendMessage()">
+          <button onclick="sendMessage()" id="send-btn">Send</button>
+        </div>
+      </div>
+      <div class="speak-toggle-row">
+        <button class="pomodoro-start" id="voice-mode-btn" onclick="toggleVoiceMode()" style="padding:10px 18px;">
+          &#127908; Start Voice Conversation
+        </button>
+        <button class="pomodoro-reset" id="lang-en-btn" onclick="setVoiceLang('en-IN')" style="padding:10px 14px;">EN</button>
+        <button class="pomodoro-reset" id="lang-hi-btn" onclick="setVoiceLang('hi-IN')" style="padding:10px 14px;">हिंदी</button>
+      </div>
+      <div class="speak-toggle-row" id="voice-status-row" style="display:none">
+        <span id="voice-status-text" style="font-size:12px;color:#a855f7;font-weight:700;"></span>
+      </div>
+      <div class="speak-toggle-row">
+        <label><input type="checkbox" id="auto-speak-toggle" onchange="saveAutoSpeakPref()"> Read tutor replies aloud automatically</label>
+      </div>
+      <div class="notes-bar">
+        <label>Upload notes (PDF or text)
+          <input type="file" id="notes-file" accept=".pdf,.txt" onchange="uploadNotes()">
+        </label>
+        <span class="notes-status" id="notes-status"></span>
+      </div>
+    </div>
+
+    <div class="tab-panel" id="tab-guide">
+      <div class="card">
+        <div class="card-title">What is the StudyFocus Proxy?</div>
+        <p style="font-size:13px;color:#4a2a5e;line-height:1.7;margin-bottom:10px;">
+          A proxy sits between your browser and the internet. Every website request passes
+          through it first. StudyFocus uses this to check each site against your age group's
+          allowed list - study sites load normally, everything else is politely blocked.
+          It runs entirely on your own device - nothing you browse is ever sent anywhere else.
+        </p>
+        <p style="font-size:13px;color:#4a2a5e;line-height:1.7;">
+          <b>You are always in control.</b> Turn it on before a study session, turn it off the
+          moment you're done - your Mac returns to completely normal browsing instantly.
+        </p>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Step 1 - Start the proxy on your computer</div>
+        <p style="font-size:13px;color:#4a2a5e;line-height:1.7;margin-bottom:8px;">
+          Open Terminal, navigate to the project folder, and run:
+        </p>
+        <div style="background:#1a1424;color:#a5f3c4;padding:12px 16px;border-radius:10px;font-family:monospace;font-size:12px;margin-bottom:8px;">
+          python3 gateway/proxy_server.py
+        </div>
+        <p style="font-size:12px;color:#7a5a94;">You should see "Gateway proxy listening on 0.0.0.0:8888" - leave this terminal window open while studying.</p>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Step 2 - Point your device at it</div>
+        <p style="font-size:13px;color:#4a2a5e;line-height:1.7;margin-bottom:8px;">
+          On Mac: <b>System Settings &rarr; Network &rarr; Wi-Fi &rarr; Details &rarr; Proxies</b>.
+          Turn on <b>Web Proxy (HTTP)</b> and <b>Secure Web Proxy (HTTPS)</b>, and for both set:
+        </p>
+        <div style="display:flex;gap:20px;justify-content:center;margin:10px 0;">
+          <div><b style="color:#a855f7">Server:</b> 127.0.0.1</div>
+          <div><b style="color:#a855f7">Port:</b> 8888</div>
+        </div>
+        <p style="font-size:12px;color:#7a5a94;">Your focus session is now active - try opening a non-study site and you'll see it's blocked.</p>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Step 3 - Choose your focus mode here</div>
+        <p style="font-size:13px;color:#4a2a5e;line-height:1.7;">
+          Complete onboarding on this dashboard with your age, class, and board - the proxy
+          automatically switches to the matching allowlist. Track your time, work through your
+          task list, and use the AI Tutor tab whenever you're stuck - all without ever leaving
+          your study environment for a distracting site.
+        </p>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Step 4 - Leaving focus mode (anytime, no questions asked)</div>
+        <p style="font-size:13px;color:#4a2a5e;line-height:1.7;margin-bottom:8px;">
+          Go back to <b>System Settings &rarr; Network &rarr; Proxies</b> and turn both toggles
+          off. That's it - completely normal, unrestricted browsing again, instantly.
+        </p>
+        <p style="font-size:12px;color:#7a5a94;">Then Ctrl+C in the terminal to stop the proxy itself when you're fully done for the day.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const API_BASE = "http://127.0.0.1:8889";
+const TUTOR_API_BASE = "http://127.0.0.1:8000";
+
+function ageToProfile(age) {
+  if (age <= 12) return "6-12";
+  if (age <= 18) return "13-18";
+  return "18-25";
+}
+
+function loadProfile() {
+  const raw = localStorage.getItem("studyfocus_onboarding");
+  return raw ? JSON.parse(raw) : null;
+}
+
+function submitOnboarding() {
+  const age = parseInt(document.getElementById("ob-age").value);
+  const cls = document.getElementById("ob-class").value;
+  const board = document.getElementById("ob-board").value;
+  if (!age || !cls || !board) { alert("Please fill in all fields"); return; }
+  const profile = { age: age, cls: cls, board: board, ageGroup: ageToProfile(age) };
+  localStorage.setItem("studyfocus_onboarding", JSON.stringify(profile));
+  initMainApp(profile);
+}
+
+function resetOnboarding() {
+  localStorage.removeItem("studyfocus_onboarding");
+  document.getElementById("main-app").style.display = "none";
+  document.getElementById("onboarding").style.display = "flex";
+}
+
+async function initMainApp(profile) {
+  document.getElementById("onboarding").style.display = "none";
+  document.getElementById("main-app").style.display = "block";
+  document.getElementById("hero-sub").textContent =
+    profile.cls + " - " + profile.board + " - Age " + profile.age;
+
+  try { await fetch(API_BASE + "/set-profile?profile=" + profile.ageGroup); } catch (e) {}
+
+  refresh();
+  renderTasks();
+  rotateQuote();
+  switchGame("trivia");
+  setInterval(refresh, 3000);
+  setInterval(rotateQuote, 15000);
+  setInterval(checkReminders, 20000);
+  setInterval(tickRunningTaskTimers, 1000);
+  if (window.Notification && Notification.permission === "default") Notification.requestPermission();
+}
+
+const QUOTES = [
+  ["The expert in anything was once a beginner.", "Helen Hayes"],
+  ["Success is the sum of small efforts repeated day in and day out.", "Robert Collier"],
+  ["Focus on being productive instead of busy.", "Tim Ferriss"],
+  ["Discipline is choosing between what you want now and what you want most.", "Abraham Lincoln"],
+  ["Don't watch the clock; do what it does. Keep going.", "Sam Levenson"],
+  ["The future depends on what you do today.", "Mahatma Gandhi"],
+  ["Small daily improvements are the key to staggering long-term results.", "Robin Sharma"],
+  ["You don't have to be great to start, but you have to start to be great.", "Zig Ziglar"],
+  ["Push yourself, because no one else is going to do it for you.", "Unknown"],
+  ["A little progress each day adds up to big results.", "Unknown"],
+];
+function rotateQuote() {
+  const pair = QUOTES[Math.floor(Math.random() * QUOTES.length)];
+  document.getElementById("quote-text").textContent = '"' + pair[0] + '"';
+  document.getElementById("quote-author").textContent = "\u2014 " + pair[1];
+}
+
+function formatTime(minutes) {
+  const totalSeconds = Math.round(minutes * 60);
+  if (totalSeconds < 60) return totalSeconds + "s";
+  const h = Math.floor(totalSeconds / 3600);
+  const m = Math.floor((totalSeconds % 3600) / 60);
+  if (h > 0) return h + "h " + m + "m";
+  return m + "m";
+}
+function formatDomain(d) { return d.replace(/^www\./, ""); }
+
+async function refresh() {
+  try {
+    const res = await fetch(API_BASE + "/status.json");
+    const data = await res.json();
+
+    const siteList = document.getElementById("site-list");
+    if (data.sites.length === 0) {
+      siteList.innerHTML = '<div class="empty-state">No browsing activity yet</div>';
+    } else {
+      const maxMin = Math.max(...data.sites.map(s => s.minutes), 0.01);
+      siteList.innerHTML = data.sites.map(s =>
+        '<div class="site-row"><div class="site-name">' + formatDomain(s.domain) + '</div>' +
+        '<div class="bar-track"><div class="bar-fill" style="width:' + (s.minutes / maxMin * 100).toFixed(0) + '%"></div></div>' +
+        '<div class="site-mins">' + formatTime(s.minutes) + '</div></div>'
+      ).join("");
+    }
+
+    document.getElementById("profile-display").innerHTML =
+      '<span class="domain-pill">' + data.age_profile_label + '</span>';
+    document.getElementById("allowed-list").innerHTML = data.allowed_domains_with_limits.map(function(item) {
+      const limitTag = item.limit_seconds
+        ? '<span class="limit-tag">(' + Math.round(item.limit_seconds / 60) + 'm/day)</span>'
+        : '';
+      return '<a class="domain-link" href="https://' + item.domain + '" target="_blank" rel="noopener">' +
+        item.domain + limitTag + '</a>';
+    }).join("");
+  } catch (e) {
+    document.getElementById("profile-display").innerHTML =
+      '<span class="domain-pill">Proxy not running on this device</span>';
+    document.getElementById("allowed-list").innerHTML =
+      '<div class="empty-state">Start your local StudyFocus proxy to see live allowed sites here - see the Setup Guide tab &rarr;</div>';
+  }
+}
+
+function todayKey() { return "studyfocus_tasks_" + new Date().toISOString().slice(0, 10); }
+function loadTasks() { return JSON.parse(localStorage.getItem(todayKey()) || "[]"); }
+function saveTasks(tasks) { localStorage.setItem(todayKey(), JSON.stringify(tasks)); }
+
+function addTask() {
+  const input = document.getElementById("task-input");
+  const hoursInput = document.getElementById("task-hours-input");
+  const timeInput = document.getElementById("task-time-input");
+  const text = input.value.trim();
+  if (!text) return;
+  const tasks = loadTasks();
+  tasks.push({
+    id: Date.now(), text: text,
+    plannedHours: hoursInput.value || null,
+    time: timeInput.value || null,
+    done: false, reminded: false,
+    trackedSeconds: 0, running: false, runStartedAt: null
+  });
+  saveTasks(tasks);
+  input.value = ""; hoursInput.value = ""; timeInput.value = "";
+  renderTasks();
+}
+
+function toggleTask(id) {
+  const tasks = loadTasks();
+  const t = tasks.find(function(t) { return t.id === id; });
+  if (t) t.done = !t.done;
+  saveTasks(tasks);
+  renderTasks();
+}
+
+function deleteTask(id) {
+  saveTasks(loadTasks().filter(function(t) { return t.id !== id; }));
+  renderTasks();
+}
+
+function toggleTaskTimer(id) {
+  const tasks = loadTasks();
+  tasks.forEach(function(t) {
+    if (t.id === id) {
+      if (t.running) {
+        t.trackedSeconds += Math.floor((Date.now() - t.runStartedAt) / 1000);
+        t.running = false; t.runStartedAt = null;
+      } else {
+        t.running = true; t.runStartedAt = Date.now();
+      }
+    } else if (t.running) {
+      t.trackedSeconds += Math.floor((Date.now() - t.runStartedAt) / 1000);
+      t.running = false; t.runStartedAt = null;
+    }
+  });
+  saveTasks(tasks);
+  renderTasks();
+}
+
+function fmtMMSS(totalSeconds) {
+  const m = Math.floor(totalSeconds / 60);
+  const s = totalSeconds % 60;
+  return String(m).padStart(2, "0") + ":" + String(s).padStart(2, "0");
+}
+
+function renderTasks() {
+  const tasks = loadTasks();
+  const list = document.getElementById("task-list");
+  if (tasks.length === 0) {
+    list.innerHTML = '<div class="empty-state">No tasks yet - add your study plan for today</div>';
+  } else {
+    list.innerHTML = tasks.map(function(t) {
+      const liveSeconds = t.trackedSeconds + (t.running ? Math.floor((Date.now() - t.runStartedAt) / 1000) : 0);
+      return '<div class="task-row">' +
+        '<input type="checkbox" class="task-checkbox" ' + (t.done ? "checked" : "") + ' onchange="toggleTask(' + t.id + ')">' +
+        '<div class="task-text ' + (t.done ? "done" : "") + '">' + t.text + '</div>' +
+        (t.plannedHours ? '<div class="task-meta">' + t.plannedHours + 'h planned</div>' : "") +
+        (t.time ? '<div class="task-meta">' + t.time + '</div>' : "") +
+        '<button class="task-timer-btn ' + (t.running ? "running" : "") + '" onclick="toggleTaskTimer(' + t.id + ')">' +
+          (t.running ? "Pause" : "Start") + '</button>' +
+        '<div class="task-timer-display">' + fmtMMSS(liveSeconds) + '</div>' +
+        '<div class="task-delete" onclick="deleteTask(' + t.id + ')">&times;</div>' +
+      '</div>';
+    }).join("");
+  }
+  updateProgressStats();
+}
+
+function tickRunningTaskTimers() {
+  const tasks = loadTasks();
+  if (tasks.some(function(t) { return t.running; })) renderTasks();
+}
+
+function updateProgressStats() {
+  const tasks = loadTasks();
+  const done = tasks.filter(function(t) { return t.done; }).length;
+  document.getElementById("tasks-done-count").textContent = done + "/" + tasks.length;
+  const pct = tasks.length ? (done / tasks.length * 100) : 0;
+  document.getElementById("task-progress").style.width = pct + "%";
+
+  const totalSeconds = tasks.reduce(function(sum, t) {
+    return sum + t.trackedSeconds + (t.running ? Math.floor((Date.now() - t.runStartedAt) / 1000) : 0);
+  }, 0);
+  const hh = Math.floor(totalSeconds / 3600);
+  const mm = Math.floor((totalSeconds % 3600) / 60);
+  document.getElementById("total-time").textContent = hh > 0 ? (hh + "h " + mm + "m") : (mm + "m");
+
+  const completedList = document.getElementById("completed-tasks-list");
+  const completed = tasks.filter(function(t) { return t.done; });
+  completedList.innerHTML = completed.length
+    ? completed.map(function(t) { return '<div class="empty-state" style="text-align:left;color:#4a2a5e">&#10003; ' + t.text + '</div>'; }).join("")
+    : '<div class="empty-state">None yet</div>';
+
+  document.getElementById("streak-count").textContent = computeStreak();
+}
+
+function computeStreak() {
+  let streak = 0;
+  for (let i = 0; i < 30; i++) {
+    const d = new Date();
+    d.setDate(d.getDate() - i);
+    const key = "studyfocus_tasks_" + d.toISOString().slice(0, 10);
+    const tasks = JSON.parse(localStorage.getItem(key) || "[]");
+    const anyDone = tasks.some(function(t) { return t.done; });
+    if (anyDone) streak++;
+    else if (i > 0) break;
+  }
+  return streak;
+}
+
+function toggleProgress() {
+  document.getElementById("progress-details").classList.toggle("open");
+}
+
+function checkReminders() {
+  const tasks = loadTasks();
+  const nowStr = new Date().toTimeString().slice(0, 5);
+  let changed = false;
+  const due = tasks.find(function(t) { return !t.done && !t.reminded && t.time && t.time <= nowStr; });
+  if (due) {
+    due.reminded = true; changed = true;
+    const banner = document.getElementById("reminder-banner");
+    banner.textContent = "Time to start: \"" + due.text + "\"";
+    banner.classList.add("show");
+    if (window.Notification && Notification.permission === "granted") {
+      new Notification("StudyFocus Reminder", { body: due.text });
+    }
+    setTimeout(function() { banner.classList.remove("show"); }, 15000);
+  }
+  if (changed) saveTasks(tasks);
+}
+
+let pomoSeconds = 25 * 60;
+let pomoRunning = false;
+let pomoInterval = null;
+let pomoIsFocus = true;
+
+function updatePomoDisplay() {
+  document.getElementById("pomo-display").textContent = fmtMMSS(pomoSeconds);
+  document.getElementById("pomo-mode").textContent = pomoIsFocus ? "Focus Session" : "Break Time";
+}
+
+function togglePomodoro() {
+  const btn = document.getElementById("pomo-start-btn");
+  if (pomoRunning) {
+    clearInterval(pomoInterval);
+    pomoRunning = false;
+    btn.textContent = "Resume";
+  } else {
+    pomoRunning = true;
+    btn.textContent = "Pause";
+    pomoInterval = setInterval(function() {
+      pomoSeconds--;
+      if (pomoSeconds <= 0) {
+        pomoIsFocus = !pomoIsFocus;
+        pomoSeconds = pomoIsFocus ? 25 * 60 : 5 * 60;
+        if (!pomoIsFocus) suggestBreak();
+      }
+      updatePomoDisplay();
+    }, 1000);
+  }
+}
+
+function resetPomodoro() {
+  clearInterval(pomoInterval);
+  pomoRunning = false; pomoIsFocus = true; pomoSeconds = 25 * 60;
+  document.getElementById("pomo-start-btn").textContent = "Start";
+  updatePomoDisplay();
+}
+
+function suggestBreak() {
+  const banner = document.getElementById("reminder-banner");
+  banner.textContent = "Focus session done! Try a Brain Break game below instead of scrolling.";
+  banner.classList.add("show");
+  setTimeout(function() { banner.classList.remove("show"); }, 15000);
+}
+
+let currentGame = "trivia";
+
+const TRIVIA = [
+  { q: "What is the capital of Australia?", options: ["Sydney", "Canberra", "Melbourne", "Perth"], answer: 1 },
+  { q: "Which planet is known as the Red Planet?", options: ["Venus", "Jupiter", "Mars", "Saturn"], answer: 2 },
+  { q: "Who wrote 'Romeo and Juliet'?", options: ["Dickens", "Shakespeare", "Twain", "Austen"], answer: 1 },
+  { q: "Chemical symbol for Gold?", options: ["Go", "Gd", "Au", "Ag"], answer: 2 },
+  { q: "How many continents are there?", options: ["5", "6", "7", "8"], answer: 2 },
+  { q: "Square root of 144?", options: ["10", "11", "12", "14"], answer: 2 },
+  { q: "Gas plants absorb from air?", options: ["Oxygen", "Nitrogen", "CO2", "Hydrogen"], answer: 2 },
+  { q: "Father of the Nation - India?", options: ["Nehru", "Gandhi", "Patel", "Ambedkar"], answer: 1 },
+  { q: "Largest ocean on Earth?", options: ["Atlantic", "Indian", "Arctic", "Pacific"], answer: 3 },
+  { q: "Smallest prime number?", options: ["0", "1", "2", "3"], answer: 2 }
+];
+
+const SCRAMBLE_WORDS = ["PYTHON", "GALAXY", "VOLCANO", "PENGUIN", "HARMONY", "JOURNEY", "CRYSTAL", "RAINBOW", "MYSTERY", "FESTIVAL"];
+
+const EMOJI_RIDDLES = [
+  { emoji: "\u2600\ufe0f\ud83c\udf3b", answer: "SUNFLOWER" },
+  { emoji: "\ud83c\udf0e\ud83d\udd25", answer: "GLOBALWARMING" },
+  { emoji: "\ud83d\udcda\ud83d\udc1b", answer: "BOOKWORM" },
+  { emoji: "\u2744\ufe0f\ud83c\udfc3", answer: "SNOWRUN" },
+  { emoji: "\ud83c\udf19\ud83d\udeb6", answer: "MOONWALK" },
+  { emoji: "\ud83e\udde0\ud83d\udca1", answer: "BRAINSTORM" }
+];
+
+const SENTENCES = [
+  ["I", "will", "study", "hard", "today"],
+  ["Success", "comes", "from", "daily", "effort"],
+  ["Reading", "makes", "the", "mind", "sharper"],
+  ["Focus", "brings", "clarity", "and", "results"]
+];
+
+let gameState = {};
+
+function switchGame(name) {
+  currentGame = name;
+  document.querySelectorAll(".game-tab").forEach(function(btn) {
+    btn.classList.toggle("active", btn.dataset.game === name);
+  });
+  if (name === "trivia") renderTrivia();
+  else if (name === "scramble") renderScramble();
+  else if (name === "emoji") renderEmoji();
+  else if (name === "sentence") renderSentence();
+}
+
+function renderTrivia() {
+  const q = TRIVIA[Math.floor(Math.random() * TRIVIA.length)];
+  gameState = { q: q };
+  document.getElementById("game-area").innerHTML =
+    '<div class="game-question">' + q.q + '</div>' +
+    '<div class="game-options">' + q.options.map(function(opt, i) {
+      return '<button class="game-option" onclick="answerTrivia(' + i + ')">' + opt + '</button>';
+    }).join("") + '</div>' +
+    '<div class="game-feedback" id="game-feedback"></div>';
+}
+function answerTrivia(choice) {
+  const opts = document.querySelectorAll(".game-option");
+  opts.forEach(function(btn, i) {
+    btn.onclick = null;
+    if (i === gameState.q.answer) btn.classList.add("correct");
+    else if (i === choice) btn.classList.add("wrong");
+  });
+  const fb = document.getElementById("game-feedback");
+  const correct = choice === gameState.q.answer;
+  fb.textContent = correct ? "Correct! Nice." : "Not quite - the answer is highlighted.";
+  fb.className = "game-feedback " + (correct ? "correct" : "wrong");
+  setTimeout(renderTrivia, 1800);
+}
+
+function scrambleWord(word) {
+  const arr = word.split("");
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    const tmp = arr[i]; arr[i] = arr[j]; arr[j] = tmp;
+  }
+  return arr.join("");
+}
+function renderScramble() {
+  const word = SCRAMBLE_WORDS[Math.floor(Math.random() * SCRAMBLE_WORDS.length)];
+  let scrambled = scrambleWord(word);
+  while (scrambled === word) scrambled = scrambleWord(word);
+  gameState = { word: word };
+  document.getElementById("game-area").innerHTML =
+    '<div class="game-question">Unscramble this word:</div>' +
+    '<div class="word-scramble">' + scrambled + '</div>' +
+    '<div class="game-input-row">' +
+      '<input type="text" id="scramble-input" placeholder="Your answer" onkeydown="if(event.key===\'Enter\')checkScramble()">' +
+      '<button onclick="checkScramble()">Check</button>' +
+    '</div>' +
+    '<div class="game-feedback" id="game-feedback"></div>';
+}
+function checkScramble() {
+  const val = document.getElementById("scramble-input").value.trim().toUpperCase();
+  const fb = document.getElementById("game-feedback");
+  const correct = val === gameState.word;
+  fb.textContent = correct ? "Correct! Great job." : "Not quite - it was " + gameState.word;
+  fb.className = "game-feedback " + (correct ? "correct" : "wrong");
+  setTimeout(renderScramble, 1800);
+}
+
+function renderEmoji() {
+  const item = EMOJI_RIDDLES[Math.floor(Math.random() * EMOJI_RIDDLES.length)];
+  gameState = { item: item };
+  document.getElementById("game-area").innerHTML =
+    '<div class="game-question">Guess the word from the emoji:</div>' +
+    '<div class="word-scramble" style="letter-spacing:0.3em">' + item.emoji + '</div>' +
+    '<div class="game-input-row">' +
+      '<input type="text" id="emoji-input" placeholder="Your answer" onkeydown="if(event.key===\'Enter\')checkEmoji()">' +
+      '<button onclick="checkEmoji()">Check</button>' +
+    '</div>' +
+    '<div class="game-feedback" id="game-feedback"></div>';
+}
+function checkEmoji() {
+  const val = document.getElementById("emoji-input").value.trim().toUpperCase().replace(/\s/g, "");
+  const fb = document.getElementById("game-feedback");
+  const correct = val === gameState.item.answer;
+  fb.textContent = correct ? "Correct! Well spotted." : "Good try - it was " + gameState.item.answer;
+  fb.className = "game-feedback " + (correct ? "correct" : "wrong");
+  setTimeout(renderEmoji, 1800);
+}
+
+function renderSentence() {
+  const words = SENTENCES[Math.floor(Math.random() * SENTENCES.length)];
+  const shuffled = words.slice().sort(function() { return Math.random() - 0.5; });
+  gameState = { words: words, picked: [] };
+  renderSentenceUI(shuffled);
+}
+function renderSentenceUI(shuffled) {
+  document.getElementById("game-area").innerHTML =
+    '<div class="game-question">Tap the words in the correct order:</div>' +
+    '<div class="sentence-answer" id="sentence-answer">' + gameState.picked.join(" ") + '</div>' +
+    '<div class="sentence-words" id="sentence-words">' +
+      shuffled.map(function(w) { return '<div class="sentence-word" onclick="pickWord(this,\'' + w + '\')">' + w + '</div>'; }).join("") +
+    '</div>' +
+    '<div class="game-feedback" id="game-feedback"></div>';
+}
+function pickWord(el, word) {
+  if (el.classList.contains("picked")) return;
+  el.classList.add("picked");
+  gameState.picked.push(word);
+  document.getElementById("sentence-answer").textContent = gameState.picked.join(" ");
+  if (gameState.picked.length === gameState.words.length) {
+    const fb = document.getElementById("game-feedback");
+    const correct = gameState.picked.join(" ") === gameState.words.join(" ");
+    fb.textContent = correct ? "Correct sentence!" : "Good try - correct order was: " + gameState.words.join(" ");
+    fb.className = "game-feedback " + (correct ? "correct" : "wrong");
+    setTimeout(renderSentence, 2200);
+  }
+}
+
+updatePomoDisplay();
+/* ============ Tab switching ============ */
+function switchTab(name) {
+  document.getElementById("tab-dashboard").classList.toggle("active", name === "dashboard");
+  document.getElementById("tab-tutor").classList.toggle("active", name === "tutor");
+  document.getElementById("tab-guide").classList.toggle("active", name === "guide");
+  document.getElementById("tab-btn-dashboard").classList.toggle("active", name === "dashboard");
+  document.getElementById("tab-btn-tutor").classList.toggle("active", name === "tutor");
+  document.getElementById("tab-btn-guide").classList.toggle("active", name === "guide");
+  if (name === "tutor" && !chatInitialized) initChat();
+}
+
+/* ============ AI Tutor chat ============ */
+let chatHistory = [];
+let chatInitialized = false;
+
+function getStudentId() {
+  let id = localStorage.getItem("studyfocus_student_id");
+  if (!id) {
+    id = "student_" + Date.now();
+    localStorage.setItem("studyfocus_student_id", id);
+  }
+  return id;
+}
+
+function addChatMessage(role, text, links) {
+  const messages = document.getElementById("messages");
+  const msgDiv = document.createElement("div");
+  msgDiv.className = "msg " + role;
+  const bubble = document.createElement("div");
+  bubble.className = "bubble";
+  bubble.textContent = text;
+
+  if (role === "assistant") {
+    const speakBtn = document.createElement("button");
+    speakBtn.className = "speak-btn";
+    speakBtn.innerHTML = "&#128266;";
+    speakBtn.title = "Read this aloud";
+    speakBtn.onclick = function() { speakText(text); };
+    bubble.appendChild(speakBtn);
+  }
+
+  msgDiv.appendChild(bubble);
+  messages.appendChild(msgDiv);
+
+  if (links && links.length > 0) {
+    const linksBlock = document.createElement("div");
+    linksBlock.className = "links-block";
+    let html = '<div class="links-title">Helpful resources</div>';
+    links.forEach(function(item) {
+      html += '<a href="' + item.links.explanation + '" target="_blank">' + item.topic + ' - explanation</a>';
+      html += '<a href="' + item.links.youtube_search + '" target="_blank">' + item.topic + ' - video tutorial</a>';
+      html += '<a href="' + item.links.practice + '" target="_blank">' + item.topic + ' - practice</a>';
+    });
+    linksBlock.innerHTML = html;
+    messages.appendChild(linksBlock);
+  }
+  messages.scrollTop = messages.scrollHeight;
+
+  if (role === "assistant") {
+    if (voiceModeActive) {
+      updateVoiceStatus("\uD83D\uDD0A Tutor speaking...");
+      speakText(text, function() {
+        if (voiceModeActive) startListeningForVoiceMode();
+      });
+    } else if (document.getElementById("auto-speak-toggle").checked) {
+      speakText(text);
+    }
+  }
+}
+
+/* ---------- Voice conversation mode ---------- */
+let recognition = null;
+let isListening = false;
+let voiceModeActive = false;
+let voiceLang = localStorage.getItem("studyfocus_voice_lang") || "en-IN";
+let voiceTurnGotResult = false;
+
+function setVoiceLang(lang) {
+  voiceLang = lang;
+  localStorage.setItem("studyfocus_voice_lang", lang);
+  document.getElementById("lang-en-btn").style.opacity = lang === "en-IN" ? "1" : "0.5";
+  document.getElementById("lang-hi-btn").style.opacity = lang === "hi-IN" ? "1" : "0.5";
+}
+
+function updateVoiceStatus(text) {
+  document.getElementById("voice-status-text").textContent = text;
+}
+
+function toggleVoiceMode() {
+  voiceModeActive = !voiceModeActive;
+  const btn = document.getElementById("voice-mode-btn");
+  const statusRow = document.getElementById("voice-status-row");
+  if (voiceModeActive) {
+    btn.innerHTML = "&#9209; End Voice Conversation";
+    statusRow.style.display = "flex";
+    startListeningForVoiceMode();
+  } else {
+    btn.innerHTML = "&#127908; Start Voice Conversation";
+    statusRow.style.display = "none";
+    if (recognition) { try { recognition.stop(); } catch (e) {} }
+    window.speechSynthesis.cancel();
+    isListening = false;
+    document.getElementById("mic-btn").classList.remove("listening");
+  }
+}
+
+function beginListening() {
+  if (!recognition) recognition = initSpeechRecognition();
+  if (!recognition) return false;
+  recognition.lang = voiceLang;
+  voiceTurnGotResult = false;
+  try { recognition.start(); } catch (e) { /* already running - ignore */ }
+  isListening = true;
+  document.getElementById("mic-btn").classList.add("listening");
+  return true;
+}
+
+function startListeningForVoiceMode() {
+  updateVoiceStatus("\uD83C\uDFA4 Listening...");
+  const ok = beginListening();
+  if (!ok) {
+    addChatMessage("system", "Voice input isn't supported in this browser - try Chrome or Safari.");
+    voiceModeActive = false;
+    document.getElementById("voice-mode-btn").innerHTML = "&#127908; Start Voice Conversation";
+    document.getElementById("voice-status-row").style.display = "none";
+  }
+}
+
+function initSpeechRecognition() {
+  const SpeechRecognitionAPI = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SpeechRecognitionAPI) return null;
+  const rec = new SpeechRecognitionAPI();
+  rec.continuous = false;
+  rec.interimResults = false;
+  rec.onresult = function(event) {
+    const transcript = event.results[0][0].transcript;
+    document.getElementById("chat-input").value = transcript;
+    voiceTurnGotResult = true;
+    if (voiceModeActive) sendMessage();
+  };
+  rec.onend = function() {
+    isListening = false;
+    document.getElementById("mic-btn").classList.remove("listening");
+    if (voiceModeActive && !voiceTurnGotResult) {
+      updateVoiceStatus("Didn't catch that - listening again...");
+      setTimeout(function() { if (voiceModeActive) startListeningForVoiceMode(); }, 700);
+    }
+  };
+  rec.onerror = function(event) {
+    isListening = false;
+    document.getElementById("mic-btn").classList.remove("listening");
+    if (voiceModeActive) {
+      if (event.error === "not-allowed" || event.error === "service-not-allowed") {
+        addChatMessage("system", "Microphone access was blocked - voice conversation stopped.");
+        toggleVoiceMode();
+      } else {
+        updateVoiceStatus("Didn't catch that - listening again...");
+        setTimeout(function() { if (voiceModeActive) startListeningForVoiceMode(); }, 700);
+      }
+    }
+  };
+  return rec;
+}
+
+function toggleListening() {
+  if (isListening) {
+    if (recognition) { try { recognition.stop(); } catch (e) {} }
+    isListening = false;
+    document.getElementById("mic-btn").classList.remove("listening");
+    return;
+  }
+  const ok = beginListening();
+  if (!ok) addChatMessage("system", "Voice input isn't supported in this browser - try Chrome or Safari.");
+}
+
+/* ---------- Voice output (text-to-speech), auto-detects Hindi vs English ---------- */
+function speakText(text, onEnd) {
+  if (!window.speechSynthesis) { if (onEnd) onEnd(); return; }
+  window.speechSynthesis.cancel();
+  const utterance = new SpeechSynthesisUtterance(text);
+  const isHindi = /[\u0900-\u097F]/.test(text);  // Devanagari script range
+  utterance.lang = isHindi ? "hi-IN" : "en-IN";
+  utterance.rate = 0.95;
+  if (onEnd) utterance.onend = onEnd;
+  window.speechSynthesis.speak(utterance);
+}
+
+function saveAutoSpeakPref() {
+  localStorage.setItem("studyfocus_auto_speak", document.getElementById("auto-speak-toggle").checked ? "1" : "0");
+}
+
+function loadAutoSpeakPref() {
+  document.getElementById("auto-speak-toggle").checked = localStorage.getItem("studyfocus_auto_speak") === "1";
+}
+
+async function sendMessage() {
+  const input = document.getElementById("chat-input");
+  const text = input.value.trim();
+  if (!text) return;
+
+  addChatMessage("user", text);
+  input.value = "";
+  document.getElementById("send-btn").disabled = true;
+  document.getElementById("typing").classList.add("show");
+
+  try {
+    const res = await fetch(TUTOR_API_BASE + "/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ student_id: getStudentId(), message: text, history: chatHistory }),
+    });
+    const data = await res.json();
+    chatHistory.push({ role: "user", content: text });
+    chatHistory.push({ role: "assistant", content: data.reply });
+    addChatMessage("assistant", data.reply, data.suggested_links);
+  } catch (e) {
+    addChatMessage("system", "Could not reach the tutor backend. Is it running on port 8000?");
+  } finally {
+    document.getElementById("send-btn").disabled = false;
+    document.getElementById("typing").classList.remove("show");
+  }
+}
+
+async function uploadNotes() {
+  const fileInput = document.getElementById("notes-file");
+  const file = fileInput.files[0];
+  if (!file) return;
+  const statusEl = document.getElementById("notes-status");
+  statusEl.textContent = "Uploading...";
+
+  const formData = new FormData();
+  formData.append("student_id", getStudentId());
+  formData.append("file", file);
+
+  try {
+    const res = await fetch(TUTOR_API_BASE + "/upload-notes", { method: "POST", body: formData });
+    const data = await res.json();
+    statusEl.textContent = "\u2713 " + data.filename + " added (" + data.chunks_stored + " sections)";
+    addChatMessage("system", "Notes from \"" + data.filename + "\" have been added - I'll use them when relevant.");
+  } catch (e) {
+    statusEl.textContent = "Upload failed - is the backend running?";
+  }
+}
+
+async function checkTutorStatus() {
+  const banner = document.getElementById("status-banner");
+  try {
+    const res = await fetch(TUTOR_API_BASE + "/health");
+    const data = await res.json();
+    if (!data.llm_configured) {
+      banner.style.display = "block";
+      banner.textContent = "Tutor backend is running, but no API key is set yet - add GROQ_API_KEY to .env";
+    } else {
+      banner.style.display = "none";
+    }
+  } catch (e) {
+    banner.style.display = "block";
+    banner.textContent = "Tutor backend not reachable - run: uvicorn main:app --reload --port 8000";
+  }
+}
+
+function initChat() {
+  chatInitialized = true;
+  loadAutoSpeakPref();
+  setVoiceLang(voiceLang);
+  addChatMessage("assistant", "Hi! I'm your study tutor. Tell me what you're working on, and I'll help you understand it step by step - not just hand you the answer, but actually help it click.");
+  checkTutorStatus();
+}
+
+const existingProfile = loadProfile();
+if (existingProfile) {
+  initMainApp(existingProfile);
+} else {
+  document.getElementById("onboarding").style.display = "flex";
+}
+</script>
+
+</body>
+</html>
